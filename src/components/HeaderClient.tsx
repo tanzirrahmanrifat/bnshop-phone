@@ -54,7 +54,12 @@ const TABS = [
 
 /** Bottom tab bar for phones. */
 export function MobileNav() {
-  const pathname = usePathname() || "/";
+  const rawPath = usePathname() || "/";
+  // Pre-rendered pages can report a different path on the server (e.g. for "/"), so the
+  // highlight is applied after mount to keep server and browser HTML identical.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const pathname = mounted ? rawPath : "";
   const count = useCartCount();
   return (
     <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
