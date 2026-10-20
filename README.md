@@ -3,7 +3,7 @@
 Phone accessories store and repair centre for Brunei.
 
 - **Storefront:** home, shop, categories, "shop by your phone", product pages with options, cart, Cash on Delivery checkout with Brunei districts, order page, tracking.
-- **Repair finder:** brand → model → repair parts with prices by part quality → booking (site or WhatsApp) → tracking by repair ID.
+- **Repair finder:** search any model, or go brand → model → repairs with prices by part quality → booking (site or WhatsApp) → tracking by repair ID. Customers can also tick "Something else" and describe the problem, or request a quote for a phone that isn't listed (`/repair/request`).
 - **Accounts:** sign in with an SMS one-time code (+673) or Google; order and repair history.
 - **Admin (`/admin`):** dashboard, orders, products (options, images, flash-sale schedule), categories, phone tags, banners, repair requests, repair brands/models/price grid, settings, delivery fees per district.
 
@@ -16,6 +16,7 @@ Stack: Next.js 16 (App Router, Server Actions), React 19, Tailwind CSS 4, Supaba
 1. Create a project at supabase.com (region close to Brunei, e.g. Singapore).
 2. **Database:** open **SQL Editor**, paste `supabase/migrations/20261019000000_init.sql`, then click **Run**.
    - Alternative, with the Supabase CLI: `supabase link --project-ref <ref>` then `supabase db push`.
+   Then run the later files in `supabase/migrations/` in date order (admin e-mails, flexible repair).
 3. **Starter data (optional):** run `supabase/seed.sql` the same way. It adds categories, phone tags, repair services, brands and a model list. It adds **no** prices; you set those in `/admin`.
 4. **Storage:** the migration creates the public `media` bucket. Only admins can upload to it.
 
@@ -60,6 +61,14 @@ npm run typecheck && npm run lint
 Pages read data during the build, so the Supabase variables must be set before `npm run build`.
 
 ## 4. Make yourself admin
+
+E-mails listed in `public.admin_emails` become admin automatically on first sign-in:
+
+```sql
+insert into public.admin_emails (email) values ('you@gmail.com');
+```
+
+For an account that already exists, update it directly:
 
 1. Sign in once on the site (phone or Google).
 2. In the Supabase SQL Editor, run:
@@ -111,6 +120,14 @@ After deploy, submit `https://yourshop.com/sitemap.xml` in Google Search Console
 ## Tests
 
 `supabase/tests/` contains 58 SQL checks: security rules, order totals and stock, sales, free delivery, variant rules, tracking, repair estimates, rate limiting, admin cancel. See its README for how to run them against any PostgreSQL 15+.
+
+## Phones
+
+The site is built for phones first: bottom tab bar (Home, Shop, Repair, Cart, Account), a sticky buy / checkout / book bar that appears when the main button scrolls away, swipeable product photos and rails, and 16 px form fields so iPhones don't zoom in while typing. Admin lists switch to cards on small screens.
+
+## Demo content
+
+Products with SKUs starting `DEMO-` and slugs starting `demo-`, and the illustrations in storage under `media/demo/`, are sample content. Replace or delete them in `/admin` before launch.
 
 ## Known limits and next steps
 
